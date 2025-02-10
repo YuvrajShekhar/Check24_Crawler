@@ -6,6 +6,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import time
+import configparser
+
+config = configparser.RawConfigParser()   
+config.readfp(open(r'input.txt'))
+pincode = config.get('check24', 'pincode')
+street = config.get('check24','street')
+house_no = config.get('check24','house_no')
 
 # Set up the Chrome options
 options = webdriver.ChromeOptions()
@@ -89,7 +96,7 @@ try:
     zip_input.click()
     time.sleep(1)  # Small pause before typing
     zip_input.clear()
-    zip_input.send_keys("10785 Berlin")
+    zip_input.send_keys(pincode)
     time.sleep(2)
     zip_input.send_keys(Keys.ENTER)
     print("Entered ZIP code and pressed Enter successfully.")
@@ -103,7 +110,7 @@ try:
     addr_input.click()
     time.sleep(1)  # Small pause before typing
     addr_input.clear()
-    addr_input.send_keys("Kurfürstenstraße")
+    addr_input.send_keys(street)
     time.sleep(3)
     addr_input.send_keys(Keys.ENTER)
     time.sleep(1)
@@ -115,7 +122,7 @@ except Exception as e:
 try:
     # We assume the cursor is already in the address field
     current_field = driver.switch_to.active_element  # Get the currently active (focused) element
-    current_field.send_keys(" 41")  # Append ' 41' to the current field (after the address)
+    current_field.send_keys(house_no)  # Append ' 41' to the current field (after the address)
     time.sleep(1)  # Wait before sending Enter
     current_field.send_keys(Keys.ENTER)  # Press Enter
     print("Entered '41' and pressed Enter successfully.")
@@ -171,9 +178,27 @@ try:
     
     for div in result_divs:
         try:
+            connection_speed = div.find_element(By.XPATH, ".//div[@class='tko-flatrate-value']")
             title_span = div.find_element(By.XPATH, ".//span[@class='tko-tariffname-text']")
             title_text = title_span.text
-            print("Tariff Title:", title_text)
+            connection_speed_text = connection_speed.text
+            if connection_speed_text == "1.000 MBit/s":
+                print("Tariff Title:", title_text)
+                print(connection_speed_text,"\n")
+                try:
+                    # Locate the div with class "tko-tariff-note"
+                    tariff_note_div = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "tko-tariff-note")))
+
+                    # Extract text from span and the div
+                    span_text = tariff_note_div.find_element(By.TAG_NAME, "span").text  # Get text from span
+                    div_text = tariff_note_div.find_element(By.TAG_NAME, "div").text  # Get text from the div
+
+                    # Combine the extracted text
+                    final_text = f"{span_text} {div_text}"
+                    print("Tariff Note:", final_text)
+                except Exception as e:
+                    print("Tariff note div not found or could not be accessed:", e)
+
         except Exception as e:
             print("Title span not found in this div")
 except Exception as e:

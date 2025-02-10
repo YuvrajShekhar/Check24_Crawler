@@ -1,0 +1,4 @@
+[check24]
+pincode = "10785 Berlin"
+street = "Kurfürstenstraße"
+house_no = "41"
