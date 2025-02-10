@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 import time
 
 # Set up the Chrome options
@@ -103,8 +104,9 @@ try:
     time.sleep(1)  # Small pause before typing
     addr_input.clear()
     addr_input.send_keys("Kurfürstenstraße")
-    time.sleep(2)
+    time.sleep(3)
     addr_input.send_keys(Keys.ENTER)
+    time.sleep(1)
     print("Entered Addresss and pressed Enter successfully.")
 except Exception as e:
     print("Addresss input field not found or could not be interacted with:", e)
@@ -131,6 +133,54 @@ except Exception as e:
     print("Search button not found or could not be clicked:", e)
 
 time.sleep(10)  
+
+# Select the "Geschwindigkeit" option in the sort filter dropdown
+try:
+    sort_dropdown = wait.until(EC.presence_of_element_located((By.ID, "tko-sort-select")))
+    select = Select(sort_dropdown)
+    select.select_by_value("downstream")
+    print("Selected 'Geschwindigkeit' successfully.")
+except Exception as e:
+    print("Sort dropdown or option not found:", e)
+
+time.sleep(10) 
+
+# Check the "Glasfaser" checkbox
+try:
+    fiberglass_checkbox = wait.until(EC.presence_of_element_located((By.NAME, "c24api_transfertype_fiberglass")))
+    driver.execute_script("arguments[0].click();", fiberglass_checkbox)
+    print("Checked the 'Glasfaser' checkbox successfully.")
+except Exception as e:
+    print("Checkbox not found or could not be clicked:", e)
+
+time.sleep(10) 
+# Fetch all result divs inside the main container
+try:
+    result_container = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-bam-element-identifier='tileContainer']")))
+    result_divs = result_container.find_elements(By.XPATH, "./div/div/div")  # Adjusted to navigate inside the container
+
+    result_class_names = [div.get_attribute("class") for div in result_divs]
+    print("Class names of result divs:", result_class_names)
+except Exception as e:
+    print("Could not fetch result divs:", e)
+
+# Loop through each result div and extract the title from the span tag
+try:
+    result_container = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-bam-element-identifier='tileContainer']")))
+    result_divs = result_container.find_elements(By.XPATH, "./div/div/div")  # Locate all result divs
+    
+    for div in result_divs:
+        try:
+            title_span = div.find_element(By.XPATH, ".//span[@class='tko-tariffname-text']")
+            title_text = title_span.text
+            print("Tariff Title:", title_text)
+        except Exception as e:
+            print("Title span not found in this div")
+except Exception as e:
+    print("Could not fetch result divs:", e)
+
+
+
 
 
 
