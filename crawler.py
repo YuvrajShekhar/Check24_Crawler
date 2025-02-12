@@ -15,8 +15,6 @@ pincode = config['check24']['pincode']
 street = config['check24']['street']
 house_no = config['check24']['house_no']
 
-print(street,"streetttt")
-
 # Set up the Chrome options
 options = webdriver.ChromeOptions()
 options.add_argument("--disable-blink-features=AutomationControlled") 
