@@ -8,11 +8,14 @@ from selenium.webdriver.support.ui import Select
 import time
 import configparser
 
-config = configparser.RawConfigParser()   
-config.readfp(open(r'input.txt'))
-pincode = config.get('check24', 'pincode')
-street = config.get('check24','street')
-house_no = config.get('check24','house_no')
+config = configparser.ConfigParser()
+with open("input.ini", "r", encoding="utf-8") as f:
+    config.read_file(f)
+pincode = config['check24']['pincode']
+street = config['check24']['street']
+house_no = config['check24']['house_no']
+
+print(street,"streetttt")
 
 # Set up the Chrome options
 options = webdriver.ChromeOptions()
