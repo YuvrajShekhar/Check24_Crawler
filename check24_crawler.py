@@ -50,12 +50,12 @@ class Check24Crawler:
         time.sleep(1)
 
         # Click the checkbox
-        try:
-            checkbox = self.wait.until(EC.element_to_be_clickable((By.ID, "P0-0")))
-            checkbox.click()
-            print("Clicked the checkbox successfully.")
-        except Exception as e:
-            print("Checkbox not found or could not be clicked:", e)
+        # try:
+        #     checkbox = self.wait.until(EC.element_to_be_clickable((By.ID, "P0-0")))
+        #     checkbox.click()
+        #     print("Clicked the checkbox successfully.")
+        # except Exception as e:
+        #     print("Checkbox not found or could not be clicked:", e)
 
         # Click the "Optionen" button to open the options modal
         try:
@@ -182,11 +182,13 @@ class Check24Crawler:
                 try:
                     connection_speed = div.find_element(By.XPATH, ".//div[@class='tko-flatrate-value']")
                     title_span = div.find_element(By.XPATH, ".//span[@class='tko-tariffname-text']")
+                    network_provider_div = div.find_element(By.XPATH, ".//div[@class='tko-providerlogo']")
+                    img_element = network_provider_div.find_element(By.TAG_NAME, "img")
+                    network_provider = img_element.get_attribute("title")
+                    print("=========================== network provider div",  network_provider)
                     title_text = title_span.text
                     connection_speed_text = connection_speed.text
                     if connection_speed_text == "1.000 MBit/s":
-                        # print("Tariff Title:", title_text)
-                        # print(connection_speed_text,"\n")
                         try:
                             # Locate the div with class "tko-tariff-note"
                             tariff_note_div = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "tko-tariff-note")))
@@ -202,7 +204,7 @@ class Check24Crawler:
                             final_text = ""
                             print("Tariff note div not found or could not be accessed:", e)
 
-                        formatted_result = "Tariff Title:" + title_text + "| Speed:" + connection_speed_text + "| Note:" +final_text
+                        formatted_result = "Network Provider: " + network_provider + " | Tariff Title:" + title_text + "| Speed:" + connection_speed_text + "| Note:" +final_text
                         output_list.append(formatted_result)
  
                 except Exception as e:
@@ -213,7 +215,6 @@ class Check24Crawler:
         return output_list
 
     def execute(self,pincode,street_name,house_number):
-        print("Test function")
         self.start_browser_engine()
         self.accepet_cookies()
         self.click_checkboxes()
@@ -239,6 +240,7 @@ class Check24Crawler:
                     print(pincode,street_name,house_number,"\n")
                     if pincode and street_name and house_number: 
                         output_list = self.execute(pincode,street_name,house_number)
+                        self.driver.quit()
                         self.write_to_csv(pincode,street_name,house_number,output_list)
                         counter+=1
                     
