@@ -7,6 +7,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import time
 import configparser
+import csv
+import os
 
 class Check24Crawler:
     def __init__(self):
@@ -17,6 +19,8 @@ class Check24Crawler:
         self.street = config['check24']['street']
         self.house_no = config['check24']['house_no']
         self.url = config['check24']['url']
+        self.input_csv_file = config['check24']['input_csv_file']
+        self.output_csv_file = config['check24']['output_csv_file']
 
     def start_browser_engine(self):
         options = webdriver.ChromeOptions()
@@ -76,7 +80,7 @@ class Check24Crawler:
         except Exception as e:
             print("Checkbox not found or could not be interacted with:", e)
 
-    def enter_address(self):
+    def enter_address(self,pincode,street_name,house_number):
         try:
             options_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Button to open address modal']")))
             options_button.click()
@@ -90,9 +94,10 @@ class Check24Crawler:
             zip_input.click()
             time.sleep(1)  # Small pause before typing
             zip_input.clear()
-            zip_input.send_keys(self.pincode)
-            time.sleep(2)
+            zip_input.send_keys(pincode)
+            time.sleep(3)
             zip_input.send_keys(Keys.ENTER)
+            time.sleep(1)
             print("Entered ZIP code and pressed Enter successfully.")
         except Exception as e:
             print("ZIP code input field not found or could not be interacted with:", e)
@@ -103,7 +108,7 @@ class Check24Crawler:
             addr_input.click()
             time.sleep(1)  # Small pause before typing
             addr_input.clear()
-            addr_input.send_keys(self.street)
+            addr_input.send_keys(street_name)
             time.sleep(3)
             addr_input.send_keys(Keys.ENTER)
             time.sleep(1)
@@ -115,7 +120,7 @@ class Check24Crawler:
         try:
             # We assume the cursor is already in the address field
             current_field = self.driver.switch_to.active_element  # Get the currently active (focused) element
-            current_field.send_keys(self.house_no)  # Append ' 41' to the current field (after the address)
+            current_field.send_keys(house_number)  # Append ' 41' to the current field (after the address)
             time.sleep(1)  # Wait before sending Enter
             current_field.send_keys(Keys.ENTER)  # Press Enter
             print("Entered '41' and pressed Enter successfully.")
@@ -157,13 +162,14 @@ class Check24Crawler:
         time.sleep(10) 
 
     def fetch_results(self):
+        output_list = []
         # Fetch all result divs inside the main container
         try:
             result_container = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-bam-element-identifier='tileContainer']")))
             result_divs = result_container.find_elements(By.XPATH, "./div/div/div")  # Adjusted to navigate inside the container
 
             result_class_names = [div.get_attribute("class") for div in result_divs]
-            print("Class names of result divs:", result_class_names)
+            # print("Class names of result divs:", result_class_names)
         except Exception as e:
             print("Could not fetch result divs:", e)
 
@@ -179,8 +185,8 @@ class Check24Crawler:
                     title_text = title_span.text
                     connection_speed_text = connection_speed.text
                     if connection_speed_text == "1.000 MBit/s":
-                        print("Tariff Title:", title_text)
-                        print(connection_speed_text,"\n")
+                        # print("Tariff Title:", title_text)
+                        # print(connection_speed_text,"\n")
                         try:
                             # Locate the div with class "tko-tariff-note"
                             tariff_note_div = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "tko-tariff-note")))
@@ -191,25 +197,72 @@ class Check24Crawler:
 
                             # Combine the extracted text
                             final_text = f"{span_text} {div_text}"
-                            print("Tariff Note:", final_text)
+                            # print("Tariff Note:", final_text)
                         except Exception as e:
+                            final_text = ""
                             print("Tariff note div not found or could not be accessed:", e)
 
+                        formatted_result = "Tariff Title:" + title_text + "| Speed:" + connection_speed_text + "| Note:" +final_text
+                        output_list.append(formatted_result)
+ 
                 except Exception as e:
                     print("Title span not found in this div")
         except Exception as e:
             print("Could not fetch result divs:", e)
 
-    def execute(self):
+        return output_list
+
+    def execute(self,pincode,street_name,house_number):
         print("Test function")
         self.start_browser_engine()
         self.accepet_cookies()
         self.click_checkboxes()
-        self.enter_address()
+        self.enter_address(pincode,street_name,house_number)
         self.filter_speed()
         self.filter_glassfiber()
-        self.fetch_results()
+        output_list = self.fetch_results()
+        return output_list
+
+    def fetch_address(self):
+        counter = 0
+        # Read the CSV file
+        with open(self.input_csv_file, mode="r", encoding="utf-8") as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip the header row
+
+            for row in reader:
+                if len(row) >= 3:  # Ensure the row has enough columns
+                    pincode = row[0].strip() + " Berlin"
+                    street_name = row[1].strip()
+                    house_number = row[2].strip()
+                    
+                    print(pincode,street_name,house_number,"\n")
+                    if pincode and street_name and house_number: 
+                        output_list = self.execute(pincode,street_name,house_number)
+                        self.write_to_csv(pincode,street_name,house_number,output_list)
+                        counter+=1
+                    
+                    if counter>1:
+                        break
+                
+    def write_to_csv(self,pincode,street_name,house_number,output_list):
+        # Check if file exists
+        file_exists = os.path.isfile(self.output_csv_file)
+
+        # Open the file in append mode (or create it if it doesn’t exist)
+        with open(self.output_csv_file, mode='a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+
+            # Write headers only if file doesn't exist
+            if not file_exists:
+                writer.writerow(["pincode", "street_name", "house_number", "results"])  # Header
+
+            # Append new row (joining list values with a separator, e.g., `|`)
+            writer.writerow([pincode, street_name, house_number, " | ".join(output_list)])
+
+        print("Data written successfully!")
 
 if __name__=="__main__":
     Check24Crawler_obj = Check24Crawler()
-    Check24Crawler_obj.execute()
+    # Check24Crawler_obj.execute()
+    Check24Crawler_obj.fetch_address()
