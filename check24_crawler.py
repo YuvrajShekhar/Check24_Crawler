@@ -21,6 +21,7 @@ class Check24Crawler:
         self.url = config['check24']['url']
         self.input_csv_file = config['check24']['input_csv_file']
         self.output_csv_file = config['check24']['output_csv_file']
+        self.current_time = time.strftime("%d.%m.%Y")
 
     def start_browser_engine(self):
         options = webdriver.ChromeOptions()
@@ -163,6 +164,8 @@ class Check24Crawler:
 
     def fetch_results(self):
         output_list = []
+        network_provider_list = []
+        note_months = []
         # Fetch all result divs inside the main container
         try:
             result_container = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-bam-element-identifier='tileContainer']")))
@@ -185,34 +188,43 @@ class Check24Crawler:
                     network_provider_div = div.find_element(By.XPATH, ".//div[@class='tko-providerlogo']")
                     img_element = network_provider_div.find_element(By.TAG_NAME, "img")
                     network_provider = img_element.get_attribute("title")
-                    print("=========================== network provider div",  network_provider)
                     title_text = title_span.text
                     connection_speed_text = connection_speed.text
                     if connection_speed_text == "1.000 MBit/s":
+                        network_provider_list.append(network_provider)
                         try:
                             # Locate the div with class "tko-tariff-note"
                             tariff_note_div = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "tko-tariff-note")))
 
                             # Extract text from span and the div
                             span_text = tariff_note_div.find_element(By.TAG_NAME, "span").text  # Get text from span
+                            cleaned_span_text = span_text.replace("Note:verfügbar ab", "").replace(":", "")
                             div_text = tariff_note_div.find_element(By.TAG_NAME, "div").text  # Get text from the div
 
                             # Combine the extracted text
-                            final_text = f"{span_text} {div_text}"
+                            # final_text = f"{span_text} {div_text}"
+                            final_text = f"{cleaned_span_text} "
                             # print("Tariff Note:", final_text)
                         except Exception as e:
                             final_text = ""
                             print("Tariff note div not found or could not be accessed:", e)
 
-                        formatted_result = "Network Provider: " + network_provider + " | Tariff Title:" + title_text + "| Speed:" + connection_speed_text + "| Note:" +final_text
-                        output_list.append(formatted_result)
+                        # formatted_result = "Network Provider: " + network_provider + " | Tariff Title:" + title_text + "| Speed:" + connection_speed_text + "| Note:" +final_text
+                        # formatted_result = str(self.current_time) + " ES: Laut check24 von " +  network_provider
+                        # 06.02.2025 ES: Laut check24 in Kurfürstenstraße 41 GF von Vodafone, 1&1, Maingau... verfügbar.
+                        note_months.append(final_text)
+                        # output_list.append(formatted_result)    
  
                 except Exception as e:
                     print("Title span not found in this div")
         except Exception as e:
             print("Could not fetch result divs:", e)
 
-        return output_list
+        formatted_result = str(self.current_time) + " ES: Laut check24 von " +  ", ".join(network_provider_list) + ". Note: (" + ", ".join(note_months) + ")" 
+
+        print(formatted_result, "========================formatted_result")
+
+        return formatted_result
 
     def execute(self,pincode,street_name,house_number):
         self.start_browser_engine()
@@ -221,8 +233,8 @@ class Check24Crawler:
         self.enter_address(pincode,street_name,house_number)
         self.filter_speed()
         self.filter_glassfiber()
-        output_list = self.fetch_results()
-        return output_list
+        formatted_result = self.fetch_results()
+        return formatted_result
 
     def fetch_address(self):
         counter = 0
@@ -239,15 +251,15 @@ class Check24Crawler:
                     
                     print(pincode,street_name,house_number,"\n")
                     if pincode and street_name and house_number: 
-                        output_list = self.execute(pincode,street_name,house_number)
+                        formatted_result = self.execute(pincode,street_name,house_number)
                         self.driver.quit()
-                        self.write_to_csv(pincode,street_name,house_number,output_list)
+                        self.write_to_csv(pincode,street_name,house_number,formatted_result)
                         counter+=1
                     
-                    if counter>1:
+                    if counter>4:
                         break
                 
-    def write_to_csv(self,pincode,street_name,house_number,output_list):
+    def write_to_csv(self,pincode,street_name,house_number,formatted_result):
         # Check if file exists
         file_exists = os.path.isfile(self.output_csv_file)
 
@@ -260,7 +272,7 @@ class Check24Crawler:
                 writer.writerow(["pincode", "street_name", "house_number", "results"])  # Header
 
             # Append new row (joining list values with a separator, e.g., `|`)
-            writer.writerow([pincode, street_name, house_number, " | ".join(output_list)])
+            writer.writerow([pincode, street_name, house_number, formatted_result])
 
         print("Data written successfully!")
 
