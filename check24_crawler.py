@@ -25,10 +25,21 @@ class Check24Crawler:
 
     def start_browser_engine(self):
         options = webdriver.ChromeOptions()
-        options.add_argument("--disable-blink-features=AutomationControlled") 
+        
+        # Run Chrome in headless mode (no GUI)
+        options.add_argument("--headless")  
+        options.add_argument("--disable-gpu")  
+        options.add_argument("--window-size=1920x1080")  # Ensures proper page loading
+        options.add_argument("--no-sandbox")  
+        options.add_argument("--disable-dev-shm-usage")  
+        options.add_argument("--disable-blink-features=AutomationControlled")  
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+        # Specify the path to the ChromeDriver service
         service = Service(r'C:\chromedriver-win64\chromedriver-win64\chromedriver.exe')
-        self.driver = webdriver.Chrome(options=options)
+        
+        # Pass the service object when initializing the WebDriver
+        self.driver = webdriver.Chrome(service=service, options=options)
         self.driver.get(self.url)
 
     def accepet_cookies(self):
@@ -36,7 +47,7 @@ class Check24Crawler:
             self.wait = WebDriverWait(self.driver, 10)  # Wait up to 10 seconds
             cookie_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//a[@onclick=\"Check24.cookieBanner.c24consent.giveConsent('fam')\"]")))
             cookie_button.click()
-            print("Accepted cookies successfully.")
+            # print("Accepted cookies successfully.")
             time.sleep(2)
         except Exception as e:
             print("Cookie button not found or could not be clicked:", e)
@@ -45,7 +56,7 @@ class Check24Crawler:
         try:
             radio_button = self.wait.until(EC.element_to_be_clickable((By.ID, "selectCustomerType-new")))
             radio_button.click()
-            print("Clicked the checkbox/radio button successfully.")
+            # print("Clicked the checkbox/radio button successfully.")
         except Exception as e:
             print("Radio button not found or could not be clicked:", e)
         time.sleep(1)
@@ -62,7 +73,7 @@ class Check24Crawler:
         try:
             options_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Button to open options modal']")))
             options_button.click()
-            print("Clicked the 'Optionen' button successfully.")
+            # print("Clicked the 'Optionen' button successfully.")
         except Exception as e:
             print("Optionen button not found or could not be clicked:", e)
 
@@ -75,9 +86,7 @@ class Check24Crawler:
             # Check if the checkbox is selected
             if checkbox.is_selected():
                 checkbox.click()  # Uncheck it
-                print("Unchecked the checkbox successfully.")
-            else:
-                print("Checkbox was already unchecked.")
+                # print("Unchecked the checkbox successfully.")
         except Exception as e:
             print("Checkbox not found or could not be interacted with:", e)
 
@@ -85,7 +94,7 @@ class Check24Crawler:
         try:
             options_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Button to open address modal']")))
             options_button.click()
-            print("Clicked the 'Optionen' button successfully.")
+            # print("Clicked the 'Optionen' button successfully.")
         except Exception as e:
             print("Optionen button not found or could not be clicked:", e)
 
@@ -99,7 +108,7 @@ class Check24Crawler:
             time.sleep(3)
             zip_input.send_keys(Keys.ENTER)
             time.sleep(1)
-            print("Entered ZIP code and pressed Enter successfully.")
+            # print("Entered ZIP code and pressed Enter successfully.")
         except Exception as e:
             print("ZIP code input field not found or could not be interacted with:", e)
 
@@ -113,7 +122,7 @@ class Check24Crawler:
             time.sleep(3)
             addr_input.send_keys(Keys.ENTER)
             time.sleep(1)
-            print("Entered Addresss and pressed Enter successfully.")
+            # print("Entered Addresss and pressed Enter successfully.")
         except Exception as e:
             print("Addresss input field not found or could not be interacted with:", e)
 
@@ -124,7 +133,7 @@ class Check24Crawler:
             current_field.send_keys(house_number)  # Append ' 41' to the current field (after the address)
             time.sleep(1)  # Wait before sending Enter
             current_field.send_keys(Keys.ENTER)  # Press Enter
-            print("Entered '41' and pressed Enter successfully.")
+            # print("Entered '41' and pressed Enter successfully.")
         except Exception as e:
             print("Could not input '41' or press Enter:", e)
 
@@ -134,7 +143,7 @@ class Check24Crawler:
         try:
             search_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and contains(text(), 'vergleichen')]")))
             search_button.click()  # Click the search button
-            print("Clicked the 'Search' button successfully.")
+            # print("Clicked the 'Search' button successfully.")
         except Exception as e:
             print("Search button not found or could not be clicked:", e)
 
@@ -145,22 +154,22 @@ class Check24Crawler:
             sort_dropdown = self.wait.until(EC.presence_of_element_located((By.ID, "tko-sort-select")))
             select = Select(sort_dropdown)
             select.select_by_value("downstream")
-            print("Selected 'Geschwindigkeit' successfully.")
+            # print("Selected 'Geschwindigkeit' successfully.")
         except Exception as e:
             print("Sort dropdown or option not found:", e)
 
-        time.sleep(10)
+        time.sleep(8)
 
     def filter_glassfiber(self):
         # Check the "Glasfaser" checkbox
         try:
             fiberglass_checkbox = self.wait.until(EC.presence_of_element_located((By.NAME, "c24api_transfertype_fiberglass")))
             self.driver.execute_script("arguments[0].click();", fiberglass_checkbox)
-            print("Checked the 'Glasfaser' checkbox successfully.")
+            # print("Checked the 'Glasfaser' checkbox successfully.")
         except Exception as e:
             print("Checkbox not found or could not be clicked:", e)
 
-        time.sleep(10) 
+        time.sleep(8) 
 
     def fetch_results(self):
         output_list = []
@@ -222,7 +231,7 @@ class Check24Crawler:
 
         formatted_result = str(self.current_time) + " ES: Laut check24 von " +  ", ".join(network_provider_list) + ". Note: (" + ", ".join(note_months) + ")" 
 
-        print(formatted_result, "========================formatted_result")
+        # print(formatted_result, "========================formatted_result")
 
         return formatted_result
 
@@ -249,15 +258,15 @@ class Check24Crawler:
                     street_name = row[1].strip()
                     house_number = row[2].strip()
                     
-                    print(pincode,street_name,house_number,"\n")
+                    # print(pincode,street_name,house_number,"\n")
                     if pincode and street_name and house_number: 
                         formatted_result = self.execute(pincode,street_name,house_number)
                         self.driver.quit()
                         self.write_to_csv(pincode,street_name,house_number,formatted_result)
                         counter+=1
                     
-                    if counter>4:
-                        break
+                    # if counter>4:
+                    #     break
                 
     def write_to_csv(self,pincode,street_name,house_number,formatted_result):
         # Check if file exists
