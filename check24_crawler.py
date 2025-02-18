@@ -171,7 +171,7 @@ class Check24Crawler:
 
         time.sleep(8) 
 
-    def fetch_results(self):
+    def fetch_results(self,pincode,street_name,house_number):
         output_list = []
         network_provider_list = []
         note_months = []
@@ -229,7 +229,7 @@ class Check24Crawler:
         except Exception as e:
             print("Could not fetch result divs:", e)
 
-        formatted_result = str(self.current_time) + " ES: Laut check24 von " +  ", ".join(network_provider_list) + ". Note: (" + ", ".join(note_months) + ")" 
+        formatted_result = str(self.current_time) + " ES: Laut check24 in " + street_name + " " + house_number + " GF von " +  ", ".join(network_provider_list) + ". Note: (" + ", ".join(note_months) + ")" 
 
         # print(formatted_result, "========================formatted_result")
 
@@ -242,7 +242,7 @@ class Check24Crawler:
         self.enter_address(pincode,street_name,house_number)
         self.filter_speed()
         self.filter_glassfiber()
-        formatted_result = self.fetch_results()
+        formatted_result = self.fetch_results(pincode,street_name,house_number)
         return formatted_result
 
     def fetch_address(self):
