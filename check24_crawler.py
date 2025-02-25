@@ -26,13 +26,13 @@ class Check24Crawler:
     def start_browser_engine(self):
         options = webdriver.ChromeOptions()
         
-        ## Run Chrome in headless mode (no GUI)
-        # options.add_argument("--headless")  
-        # options.add_argument("--disable-gpu")  
-        # options.add_argument("--window-size=1920x1080")  # Ensures proper page loading
-        # options.add_argument("--no-sandbox")  
-        # options.add_argument("--disable-dev-shm-usage")  
-        # options.add_argument("--disable-blink-features=AutomationControlled")  
+        # Run Chrome in headless mode (no GUI)
+        options.add_argument("--headless")  
+        options.add_argument("--disable-gpu")  
+        options.add_argument("--window-size=1920x1080")  # Ensures proper page loading
+        options.add_argument("--no-sandbox")  
+        options.add_argument("--disable-dev-shm-usage")  
+        options.add_argument("--disable-blink-features=AutomationControlled")  
 
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
@@ -223,7 +223,7 @@ class Check24Crawler:
 
                             note_months.append(final_text)
                             # output_list.append(formatted_result)    
-                            formatted_result = str(self.current_time) + " ES: Laut check24 in " + street_name + " " + house_number + " GF von " +  ", ".join(network_provider_list) + ". Note: (" + ", ".join(note_months) + ")" 
+                            formatted_result = str(self.current_time) + " ES: Laut check24 in " + street_name + " " + house_number + " GF von " +  ", ".join(network_provider_list) + ".(" + ", ".join(note_months) + ")" 
     
                     except Exception as e:
                         print("Title span not found in this div")
@@ -261,7 +261,7 @@ class Check24Crawler:
                         network_provider = img_element.get_attribute("title")
                         title_text = title_span.text
                         connection_speed_text = connection_speed.text
-                        print(connection_speed_text,network_provider,"connection_speed,network_provider")
+                        # print(connection_speed_text,network_provider,"connection_speed,network_provider")
                         if connection_speed_text == "1.000 MBit/s" and network_provider == "pyur":
                             network_provider_list.append(network_provider)
                             try:
@@ -280,10 +280,10 @@ class Check24Crawler:
                                 print("Tariff note div not found or could not be accessed:", e)
 
                             note_months.append(final_text) 
-                            print(network_provider_list,note_months,"====network_provider_list,note_months")
-                            formatted_result = str(self.current_time) + " ES: Laut check24 in " + street_name + " " + house_number + " GF von " +  ", ".join(network_provider_list) + ". Note: (" + ", ".join(note_months) + ")" + " buchbar (Kabel oder GF?)" 
+                            # print(network_provider_list,note_months,"====network_provider_list,note_months")
+                            formatted_result = str(self.current_time) + " ES: Laut check24 in " + street_name + " " + house_number + " 1000 Mbit/s Tarif von " +  ", ".join(network_provider_list) + ".(" + ", ".join(note_months) + ")" + " buchbar (Kabel oder GF?)" 
 
-                            print(formatted_result, "========================formatted_result")
+                            # print(formatted_result, "========================formatted_result")
                             return formatted_result
                     except Exception as e:
                         print("Title span not found in this div")
@@ -324,8 +324,8 @@ class Check24Crawler:
                         self.write_to_csv(pincode,street_name,house_number,formatted_result)
                         counter+=1
                     
-                    if counter>4:
-                        break
+                    # if counter>4:
+                    #     break
                 
     def write_to_csv(self,pincode,street_name,house_number,formatted_result):
         # Check if file exists
