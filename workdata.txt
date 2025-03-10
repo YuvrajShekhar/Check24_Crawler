@@ -1,0 +1,88 @@
+Tasks Worked on	Comments
+Setting Up New Notebook	Sucessfully Setup the New Notebook
+Encryption for Windows	"- Windows can be encrypted using BitLocker encryption for free on Windows 10/11 Pro. 
+- Windows Home Drive can be encrypted using 3rd party encyption softwares
+- Windows Home can be encrypted for free upt 16 gb of disk size, above which needs subscription to software (around 30 euro per device yearly)
+- 3rd party software (https://iboysoft.com/)"
+Setup BearLocal Email ID	succesfully setup it@bearlocal.de
+System Backup to Hard Disk	succesfully was able to backup entire system to hard disk drives
+Hard Disk Encryption	Working on trying to encrypt the data using VeraCrypt Software
+External Hard Disk Encryption	Succesfully able to encrypt external drives (Flash drive, pendrive, hard disk) using VeraCrypt OpenSource Software
+Internal Hard Disk Encryption	Succesfully able to encrypt internal drives (Local Disk :D/E) using VeraCrypt Sofware
+Documentation : External HDD Encyption	Created Documentation on how to encrypt external hard disk drives
+Check CRM Tool : Dolibarr	Got access to Dolibarr CRM tool and had a user created for me.
+Contract names in dop-down list 	Succesfully achieved! CRM->Commerce->Contracts->List
+Contract duration 	Succesfully achieved! CRM->Commerce->Contracts->List->Contract date
+Sorting for contracts => according to date 	Succesfully achieved! CRM->Commerce->Contracts->List->sort the table 
+Status of contract	Succesfully achieved! CRM->Commerce->Contracts->List->Status->Colour
+Global search function -> find clients directly 	Succesfully achieved! CRM->Third-parties-> List of Customers -> Search in filter
+SMS messaging from CRM	Can be achieved! Requires additonal SMS sender module to be purchased for 24-30 Euros. Costs 0,045 Euro per SMS.
+Email Templates	Succesfullt achieved! Have been implement and tested. works
+Customer preffered Language	No Specific section. Can be added in note section of customer contact.
+Customer Tags - Good/Bad/Flagged	Succesfully achieved! Created Customer tags for good,normal,bad and flagged customer which can be assigned to each customer. can also be filtered to search only each cattegory of customers.
+Creation of Tickets	Succesfully achieved! CRM->Tickets->New Ticket
+View of tasks workflow on the tickets	Succesfully acchieved! Click on Add a message in the ticket and it comes up on the right bottom as linked event with each message history
+Assign Date & time to tickets	Can link data and time to a ticket on the Events/Agenda Tab of the tickets function
+Email Notification of Task Assignment	Can Sucesfully enable email notification to the assigned employee saying a ticket has been assigned to him/her
+Add new attribute for Tickets	Succesfully achieved! Added 'Ticket execute date' as a new attribute for creation on ticket from the settings of the ticket page
+Kundeninformation	Can add and store customer information such as Email, Facebook, Whatsaap, LinkedIn etc
+Time Sheet Tracking for Employeees	Added a new module for timesheet tracking. Still need to figure out detials about it.
+Time Sheet Tracking for Employeees	Trying to get HR module, for HR to assign the days of working for emplyees
+Brainstroming Ideas	New ideas for the company. Hide profit share from empyolee, point system, whatsaap automation, Website creation, SEO fro the website and store.
+Workspace Setup	Setup the new Table and Chiars for the workspace
+Install Wifi Drivers on Both PCs	Installed the new TP Link wifi drivers to both PCs at the Alexa 1&1 Premium Shop
+Sleep mode inactivity	Disabled the turning off, of the PCs due to inactivity
+Fix Kaspersky Pop Ups	Fixed Kaspersky pop up on Alex Notebook due to beralocal.de servers
+Fix Mail Requesting Passwords	Changed Thunderbird settings for not requesting passwords untill tried to check mails. also re configured support@premimum mail id in alex laptop
+Fix Thunderbird bearlocal pop up	Fixed thunderbird from throwing security issues for bearlocal server. mentioned that is not a threat so no pop ups come in future
+Fix Password mismatch for 1&1 website	PC 2 in alexa shop had issues logging into 1&1 website. succesfully fixed the issue.
+NetzNavi	Made NetzNavi Landing Page Prototype in English
+	Made NetzNavi Landing Page Prototype in Deutsch
+	Metting with Max on Design Discussion
+	Started Development of Landing Page
+	Developed Navbar and also made it responsive
+NetzNavi	added navbar homepage and about section
+	
+NetzNavi	added how it works column, fixed issues with bacnkgroud purple image
+	added testimonials section
+	added contact form section
+	added contact form section spacing
+	added footer
+	fixed navbar background and added points to about section
+	fixed text spacing issues
+	fixed text spacing issues
+NetzNavi	added favicon
+	
+NetzNavi	added static navbar, smooth scrolling and extra about section
+	added functionality to sign up now button
+
+Check24 Crawler	working till enter address details and click enter to see results
+Check24 Crawler	working and able to select all filters and fetch all result names, need to still clean code and make it class based
+	added config parsers, throwing erros, need to check
+Check24 Crawler	fixed reading from configration file issue
+	cleaned code by adding classes and objects
+Check24 Crawler	able to fetch data from the check24 site and output into csv file
+	 added network provider and also fixed multiple chrome window issues
+Check24 Crawler	Fixed the formatting for the results fetched from the automation box, 
+	fixed the updating entry to happen after every loop instead of after the entire script
+Check24 Crawler	Fixed more formating of results
+	ran the bot and generated results for 150+ addresses. it takes around 50 seconds to scare information of 1 address
+Check24 Crawler	Added 2 more cases for filtering the data from deck24 website. 
+	one for checking if pyur connection exists without glasfaser and also for no data recorrds
+Check24 Crawler	Made few changes to the bot results, 
+NetzNavi	added new images to the netznavi landing page and made changes to the navbar
+Check24 Crawler	added new script to convert csv to excel
+NetzNavi	added slideshow for images and testimonials
+NetzNavi	Made changes to footer,
+	added copyright details and created a page for the same, 
+	modified the looks of the images and added captions for slidebar
+
+NetzNavi	made changes to footer
+	added content to features
+	added content to copyright page
+Check24 Crawler	made few caption content changes
+NetzNavi	changed styling for mobile version of navbar
+	changed footer styling. made it darker and aligned elements in a single line
+	cleaned the css code to be code friendly and divided into sections
+	added email functionality
+	removed unessary test elements
